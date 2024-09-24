@@ -1,0 +1,14 @@
+ service:
+    enabled: true
+    active:
+      enabled: true
+      annotations: {}
+    standby:
+      enabled: true
+      annotations: {}
+    instanceSelector:
+      enabled: true
+    type: NodePort
+    externalTrafficPolicy: Cluster
+    port: 8200
+    targetPort: 8200
