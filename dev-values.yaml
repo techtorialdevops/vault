@@ -1,14 +1,10 @@
- service:
-    enabled: true
-    active:
-      enabled: true
-      annotations: {}
-    standby:
-      enabled: true
-      annotations: {}
-    instanceSelector:
-      enabled: true
-    type: NodePort
+server:
+  # Enable the Vault server
+  enabled: true
+
+  # Set the service type to LoadBalancer
+  service:
+    type: LoadBalancer
+    annotations: {}
+    labels: {}
     externalTrafficPolicy: Cluster
-    port: 8200
-    targetPort: 8200
