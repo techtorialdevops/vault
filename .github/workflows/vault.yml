@@ -50,7 +50,7 @@ jobs:
     
     - name: Access cloned repo
       run: |
-         cd Grafana
+         cd vault
          ls -la
 
     - name: Deploy Helm Chart
