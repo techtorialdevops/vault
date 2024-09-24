@@ -1,0 +1,60 @@
+name: Grafana Deploy
+
+on:
+  push:
+    branches:
+      - main 
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  grafana:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --region us-east-2 --name techtorial-eks-JPQc2wr7
+      
+    - name: Install Kubectl
+      run: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    # - name: Create Namespace
+    #   run: kubectl create ns test
+
+    - name: Install Helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        chmod +x get_helm.sh
+        ./get_helm.sh
+    
+    - name: Clone Vault
+      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+      with:
+        depth: 1
+        branch: 'main'
+        owner: 'techtorialdevops'
+        repository: 'vault'
+    
+    - name: Access cloned repo
+      run: |
+         cd Grafana
+         ls -la
+
+    - name: Deploy Helm Chart
+      run: |
+        helm repo add hashicorp https://helm.releases.hashicorp.com
+        helm template  vault hashicorp/vault -f values.yaml -f dev-values.yaml > kubectl.yaml
+        kubectl apply -f kubectl.yaml
