@@ -57,4 +57,4 @@ jobs:
       run: |
         helm repo add hashicorp https://helm.releases.hashicorp.com
         helm template  vault hashicorp/vault -f values.yaml -f dev-values.yaml > kubectl.yaml
-        kubectl apply -f kubectl.yaml
+        kubectl delete -f kubectl.yaml
